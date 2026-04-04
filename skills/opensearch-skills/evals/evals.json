@@ -1,0 +1,149 @@
+{
+  "skill_name": "opensearch-skills",
+  "description": "Evaluations for the opensearch-skills agent skill. Tests cover the core workflow phases: cluster setup, data loading, index creation, search configuration, and search quality evaluation.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "builtin-imdb-bm25-setup",
+      "prompt": "I want to set up a search app for movie data. Use the built-in IMDB sample dataset. I just need basic keyword search for now, nothing fancy.",
+      "expected_output": "The agent starts or detects an OpenSearch cluster, loads the built-in IMDB sample data, creates an index with appropriate text field mappings, indexes the documents, and launches a search UI where keyword queries return relevant movie results.",
+      "assertions": [
+        "Runs preflight-check before attempting to start a cluster",
+        "Loads sample data using load-sample with builtin_imdb type",
+        "Creates an index with text field mappings that include primaryTitle",
+        "Indexes documents using index-bulk",
+        "Uses BM25/keyword search strategy without deploying an ML model",
+        "Launches the Search Builder UI and presents the URL to the user"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "custom-json-semantic-search",
+      "prompt": "I have a product catalog in evals/files/products.json. I want customers to be able to search by describing what they need, like 'something to keep my drinks cold on a hike'. Can you set up semantic search for this?",
+      "expected_output": "The agent loads the product data, recognizes the need for semantic/vector search, proposes an architecture with an embedding model and ingest pipeline, creates an index with both text and knn_vector fields, deploys a model, creates ingest and search pipelines, indexes the data, and launches a UI where natural language queries return semantically relevant products.",
+      "files": ["evals/files/products.json"],
+      "assertions": [
+        "Loads sample data from the provided JSON file path",
+        "Identifies text fields including 'name' and 'description'",
+        "Proposes a semantic or hybrid search architecture before executing",
+        "Deploys an embedding model using deploy-model",
+        "Creates an ingest pipeline with text_embedding processor",
+        "Creates an index with a knn_vector field for embeddings",
+        "Indexes the product documents through the ingest pipeline",
+        "Launches the Search Builder UI"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "csv-hybrid-search",
+      "prompt": "I've got a CSV of tech articles at evals/files/articles.csv. I want both keyword search for exact terms and semantic search for concept matching. Set up hybrid search please.",
+      "expected_output": "The agent loads the CSV data, sets up hybrid search combining BM25 and vector search, creates proper index mappings with text and knn_vector fields, deploys a model, creates both ingest and search pipelines with normalization, indexes the articles, and launches a UI where hybrid queries work.",
+      "files": ["evals/files/articles.csv"],
+      "assertions": [
+        "Loads sample data from the CSV file using load-sample",
+        "Proposes a hybrid search architecture combining lexical and semantic",
+        "Deploys an embedding model",
+        "Creates an ingest pipeline for text embedding",
+        "Creates a search pipeline with normalization-processor for hybrid scoring",
+        "Creates an index with both text fields and a knn_vector field",
+        "Indexes the articles through the ingest pipeline",
+        "Launches the Search Builder UI"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "preflight-no-cluster-handling",
+      "prompt": "I want to search some documents with OpenSearch but I don't have anything set up yet. Can you help?",
+      "expected_output": "The agent runs preflight-check, detects no cluster is running, starts OpenSearch via Docker using start_opensearch.sh, verifies the cluster is available, then asks the user for their data source before proceeding.",
+      "assertions": [
+        "Runs preflight-check as the first step",
+        "Detects that no cluster is running from the preflight result",
+        "Starts OpenSearch using bash scripts/start_opensearch.sh",
+        "Verifies the cluster is available after starting",
+        "Asks the user for their data source before creating an index",
+        "Does not skip Phase 1 or jump ahead to index creation without data"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "evaluation-after-setup",
+      "prompt": "I already have an index called 'movies' with hybrid search set up. Can you evaluate how well the search is working and suggest improvements?",
+      "expected_output": "The agent reads the evaluation guide, designs test queries with relevance judgments based on the index data, runs the evaluation using multiple search methods, computes nDCG/precision/MRR metrics, diagnoses issues, and presents a formatted report with actionable recommendations.",
+      "assertions": [
+        "Reads the evaluation_guide.md reference file",
+        "Examines the existing index mapping and sample documents to understand the data",
+        "Designs test queries with relevance judgments appropriate to the data",
+        "Runs search queries using multiple methods for comparison",
+        "Reports quantitative metrics including nDCG, precision, or MRR",
+        "Provides specific actionable recommendations based on the results"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "opensearch-knowledge-question",
+      "prompt": "What embedding models does OpenSearch support for semantic search? I'm trying to decide between dense and sparse vectors.",
+      "expected_output": "The agent reads the relevant knowledge files (dense_vector_models.md and sparse_vector_models.md) and/or searches documentation to provide a clear comparison of dense vs sparse vector models, including supported models, trade-offs, and a recommendation based on the user's needs.",
+      "assertions": [
+        "Reads dense_vector_models.md or sparse_vector_models.md knowledge files",
+        "Explains the difference between dense and sparse vector approaches",
+        "Names specific supported models",
+        "Discusses trade-offs such as accuracy vs efficiency or latency",
+        "Does not hallucinate unsupported model names or incorrect capabilities"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "log-analytics-workflow",
+      "prompt": "I have OpenSearch running with some application logs. Can you help me find error patterns in the last 24 hours and see which services are failing the most?",
+      "expected_output": "The agent reads the log-analytics reference, discovers the available log indices, examines their mappings and sample documents, then builds PPL or DSL queries to analyze error patterns and aggregate failures by service.",
+      "assertions": [
+        "Reads the observability/log-analytics.md reference file",
+        "Discovers available indices before writing queries",
+        "Examines index mappings to understand the log schema",
+        "Queries for error-level log entries with a time filter",
+        "Aggregates or groups results by service or source",
+        "Presents findings in a clear summary rather than raw JSON"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "pasted-sample-document",
+      "prompt": "Here's a sample document from my dataset:\n\n{\"recipe_name\": \"Classic Margherita Pizza\", \"cuisine\": \"Italian\", \"prep_time_minutes\": 30, \"ingredients\": [\"dough\", \"tomato sauce\", \"mozzarella\", \"basil\"], \"instructions\": \"Stretch dough, add sauce and cheese, bake at 450F for 12 minutes, top with fresh basil.\", \"difficulty\": \"easy\", \"rating\": 4.8}\n\nI want to search recipes by what I'm in the mood for, like 'quick Italian dinner' or 'something with cheese'.",
+      "expected_output": "The agent parses the pasted document, identifies text fields suitable for search (recipe_name, instructions, cuisine), recommends semantic or hybrid search given the natural language query style, and proceeds through the setup workflow.",
+      "assertions": [
+        "Correctly parses the pasted JSON document",
+        "Identifies recipe_name, instructions, and cuisine as text fields",
+        "Recognizes that natural language queries like 'quick Italian dinner' need semantic search",
+        "Proposes a semantic or hybrid search architecture",
+        "Asks for the full dataset or offers to proceed with the sample",
+        "Does not create an index with only keyword/BM25 search given the stated query patterns"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "wrong-command-recovery",
+      "prompt": "Can you deploy the model called 'super-embeddings-v9' to my OpenSearch cluster?",
+      "expected_output": "The agent attempts to deploy the model, recognizes it is not in the supported pretrained models list, reports the error clearly, and lists the actually supported models for the user to choose from.",
+      "assertions": [
+        "Attempts to deploy the model or checks if it is supported",
+        "Reports that the model is not supported rather than failing silently",
+        "Lists available pretrained models from the PRETRAINED_MODELS registry",
+        "Does not hallucinate that the model was deployed successfully",
+        "Waits for the user to select a valid model before proceeding"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "phase-ordering-compliance",
+      "prompt": "I need an index called 'products' with 3 knn_vector fields and a custom hybrid pipeline. Skip the sample data step, I'll load data later.",
+      "expected_output": "The agent should not blindly create the index as specified. Per the skill's rules, Phase 1 (sample data collection) must not be skipped. The agent should explain why it needs to see sample data first and ask the user to provide at least one sample document.",
+      "assertions": [
+        "Does not immediately create the index without sample data",
+        "Explains that understanding the data structure is needed before designing mappings",
+        "Asks the user to provide sample data or a sample document",
+        "Follows the skill's rule to never skip Phase 1",
+        "Does not blindly create 3 knn_vector fields without understanding what they map to"
+      ]
+    }
+  ]
+}

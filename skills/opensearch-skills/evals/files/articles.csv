@@ -1,0 +1,6 @@
+id,title,author,published_date,body,tags
+1,Introduction to Vector Search,Alice Chen,2024-03-15,"Vector search uses dense embeddings to find semantically similar documents. Unlike keyword search it understands meaning not just exact words.",machine-learning;search;vectors
+2,Building REST APIs with Python,Bob Martinez,2024-04-02,"FastAPI makes it easy to build production-ready REST APIs. Start with a simple endpoint and add validation with Pydantic models.",python;api;web-development
+3,Understanding Database Indexing,Carol Wu,2024-05-10,"Database indexes speed up queries by creating sorted data structures. B-tree indexes are most common but hash indexes work well for equality lookups.",databases;performance;indexing
+4,Kubernetes for Beginners,Dave Patel,2024-06-01,"Kubernetes orchestrates containerized applications across clusters. Pods are the smallest deployable units and Services expose them to the network.",kubernetes;devops;containers
+5,Natural Language Processing Basics,Eve Johnson,2024-07-20,"NLP combines linguistics and machine learning to help computers understand human language. Tokenization and embeddings are fundamental concepts.",nlp;machine-learning;ai

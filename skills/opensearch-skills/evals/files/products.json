@@ -1,0 +1,12 @@
+[
+  {"name": "Wireless Bluetooth Headphones", "category": "Electronics", "brand": "SoundMax", "price": 79.99, "stock": 142, "description": "Over-ear wireless headphones with active noise cancellation and 30-hour battery life"},
+  {"name": "Organic Green Tea", "category": "Grocery", "brand": "LeafPure", "price": 12.49, "stock": 500, "description": "Premium Japanese sencha green tea, 100 bags per box"},
+  {"name": "Running Shoes Pro", "category": "Sports", "brand": "SprintFit", "price": 129.00, "stock": 75, "description": "Lightweight carbon-plate running shoes for marathon training"},
+  {"name": "Stainless Steel Water Bottle", "category": "Sports", "brand": "HydroKeep", "price": 24.99, "stock": 320, "description": "Double-walled vacuum insulated bottle, keeps drinks cold 24 hours"},
+  {"name": "USB-C Charging Cable", "category": "Electronics", "brand": "QuickLink", "price": 9.99, "stock": 1000, "description": "6ft braided USB-C to USB-C cable with 100W power delivery"},
+  {"name": "Yoga Mat Premium", "category": "Sports", "brand": "ZenFlex", "price": 45.00, "stock": 200, "description": "Extra thick 6mm non-slip yoga mat with alignment markers"},
+  {"name": "Dark Chocolate Bar 85%", "category": "Grocery", "brand": "CocoaCraft", "price": 4.99, "stock": 650, "description": "Single-origin dark chocolate from Ecuador, 85% cacao"},
+  {"name": "Mechanical Keyboard", "category": "Electronics", "brand": "KeyForge", "price": 149.99, "stock": 88, "description": "Hot-swappable mechanical keyboard with RGB lighting and Cherry MX switches"},
+  {"name": "Protein Powder Vanilla", "category": "Grocery", "brand": "FuelUp", "price": 34.99, "stock": 180, "description": "Whey protein isolate, 25g protein per scoop, no artificial sweeteners"},
+  {"name": "Camping Tent 4-Person", "category": "Sports", "brand": "TrailBlazer", "price": 199.00, "stock": 45, "description": "Waterproof 4-person dome tent with vestibule and rain fly"}
+]
