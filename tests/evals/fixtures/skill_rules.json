@@ -1,0 +1,202 @@
+[
+  {
+    "id": "launchpad-preflight-first",
+    "skill": "opensearch-launchpad",
+    "prompt": "Set up a BM25 search index for my e-commerce product data",
+    "rule": "Must run preflight-check before creating any index or loading data",
+    "criteria": "The response must instruct running 'preflight-check' as the first action before creating an index, loading data, or any other operation. It must not jump straight to index creation or data loading.",
+    "rationale": "Phase 1 requires checking cluster status before any other action"
+  },
+  {
+    "id": "launchpad-no-agentic-on-serverless",
+    "skill": "opensearch-launchpad",
+    "prompt": "I want to set up agentic search and deploy it to Amazon OpenSearch Serverless",
+    "rule": "Must warn that agentic search requires a managed domain, not Serverless",
+    "criteria": "The response must clearly state that agentic search cannot be deployed to Amazon OpenSearch Serverless and requires a managed domain instead. It must not suggest Serverless is a valid target for agentic search.",
+    "rationale": "Key rule: agentic search does not deploy to Amazon OpenSearch Serverless"
+  },
+  {
+    "id": "launchpad-no-serverless-scale-to-zero",
+    "skill": "opensearch-launchpad",
+    "prompt": "Does Amazon OpenSearch Serverless scale to zero when not in use?",
+    "rule": "Must not claim Serverless scales to zero",
+    "criteria": "The response must NOT claim that Amazon OpenSearch Serverless scales to zero. It should clarify that Serverless does not scale to zero and always maintains minimum capacity.",
+    "rationale": "Key rule: do not describe Amazon OpenSearch Serverless as scaling to zero"
+  },
+  {
+    "id": "launchpad-present-all-strategies",
+    "skill": "opensearch-launchpad",
+    "prompt": "What search strategies are available? I'm not sure which one to pick.",
+    "rule": "Must present all five search strategies: bm25, dense_vector, neural_sparse, hybrid, agentic",
+    "criteria": "The response must present all five search strategies: BM25 (keyword), dense vector (semantic embeddings), neural sparse, hybrid (keyword + semantic), and agentic. All five must be mentioned.",
+    "rationale": "Phase 2 requires presenting all five strategies"
+  },
+  {
+    "id": "log-analytics-ask-cluster-first",
+    "skill": "log-analytics",
+    "prompt": "Investigate errors in my application logs",
+    "rule": "Must ask which cluster to connect to before doing anything else",
+    "criteria": "The response must ask the user for cluster information — specifically cluster type (local, AOS, or AOSS), endpoint URL, and authentication method — before attempting any discovery, querying, or MCP configuration. It must not assume localhost or any default endpoint.",
+    "rationale": "Phase 1 requires asking for cluster type, endpoint, and auth upfront — agent must not assume localhost"
+  },
+  {
+    "id": "log-analytics-ask-cluster-aoss",
+    "skill": "log-analytics",
+    "prompt": "I want to analyze logs stored in my Amazon OpenSearch Serverless collection. Can you help?",
+    "rule": "Must ask for the AOSS endpoint URL and authentication method, not assume a default",
+    "criteria": "The response must ask for the specific AOSS endpoint URL and how the user authenticates (AWS profile or credentials). It must not assume localhost, a generic endpoint, or skip asking for auth details when the user mentions Amazon OpenSearch Serverless.",
+    "rationale": "AOSS requires a collection-specific endpoint and SigV4 auth — agent must not default to localhost"
+  },
+  {
+    "id": "log-analytics-discovery-first",
+    "skill": "log-analytics",
+    "prompt": "Write me a PPL query to find all ERROR logs in my application",
+    "rule": "Must not assume field names — must mention discovering the index mapping or schema first",
+    "criteria": "The response must not assume specific field names like 'level' or 'log.level'. It must mention the need to discover the index mapping or inspect the schema before writing a query, since field names vary by log source.",
+    "rationale": "Key rule: discovery first — never assume field names"
+  },
+  {
+    "id": "log-analytics-ppl-primary",
+    "skill": "log-analytics",
+    "prompt": "I've already checked my index mapping. The index is called 'app-logs', the log level field is 'log.level', the service field is 'service.name', and the timestamp is '@timestamp'. Now show me a PPL query to count errors by service over the last 24 hours.",
+    "rule": "Must use PPL as the primary query language, not Query DSL",
+    "criteria": "The response must provide a PPL (Pipe Processing Language) query as the primary solution. It must use PPL syntax starting with 'source =' and pipe operators. It must not lead with a Query DSL JSON body as the main answer.",
+    "rationale": "Key rule: use PPL as the primary query language. Prompt provides field context so the skill can skip discovery and go straight to PPL."
+  },
+  {
+    "id": "log-analytics-quote-dotted-fields",
+    "skill": "log-analytics",
+    "prompt": "Show me a PPL query that filters by log.level and host.name",
+    "rule": "Must backtick-quote dotted field names in PPL queries",
+    "criteria": "The response must use backtick quotes around dotted field names in PPL queries, writing `log.level` and `host.name` with backticks, not without them. Unquoted dotted field names in PPL are a syntax error.",
+    "rationale": "Key rule: always backtick-quote dotted field names in PPL"
+  },
+  {
+    "id": "trace-analytics-discovery-first",
+    "skill": "trace-analytics",
+    "prompt": "Find all error spans in my trace data",
+    "rule": "Must mention discovering trace indices before querying",
+    "criteria": "The response must mention discovering or looking for trace indices (such as otel-v1-apm-span-*) before writing any query. It must not jump straight to a query without first addressing index discovery.",
+    "rationale": "Key rule: discovery first — look for otel-v1-apm-span-* indices"
+  },
+  {
+    "id": "trace-analytics-quote-dotted-fields",
+    "skill": "trace-analytics",
+    "prompt": "Show me a PPL query for agent invocations using the gen_ai operation name field",
+    "rule": "Must backtick-quote the dotted field name attributes.gen_ai.operation.name",
+    "criteria": "The response must use backtick quotes around the dotted field name attributes.gen_ai.operation.name in the PPL query, writing it as `attributes.gen_ai.operation.name`. Unquoted dotted field names in PPL are a syntax error.",
+    "rationale": "Key rule: always backtick-quote dotted field names"
+  },
+  {
+    "id": "aws-setup-validate-credentials-first",
+    "skill": "aws-setup",
+    "prompt": "Provision an Amazon OpenSearch Service domain for my search app",
+    "rule": "Must validate AWS credentials before starting provisioning",
+    "criteria": "The response must include a step to validate AWS credentials (e.g., running 'aws sts get-caller-identity') before starting any provisioning steps. It must not jump straight to creating resources without credential validation.",
+    "rationale": "Key rule: always validate AWS credentials before starting"
+  },
+  {
+    "id": "aws-setup-no-agentic-on-serverless",
+    "skill": "aws-setup",
+    "prompt": "I want to deploy agentic search to Amazon OpenSearch Serverless",
+    "rule": "Must warn that agentic search requires a managed domain, not Serverless",
+    "criteria": "The response must clearly state that agentic search cannot be deployed to Amazon OpenSearch Serverless and requires a managed domain instead. It must not suggest Serverless is a valid deployment target for agentic search.",
+    "rationale": "Key rule: agentic search does not deploy to Amazon OpenSearch Serverless"
+  },
+  {
+    "id": "aws-setup-no-serverless-scale-to-zero",
+    "skill": "aws-setup",
+    "prompt": "Tell me about Amazon OpenSearch Serverless pricing and scaling behavior",
+    "rule": "Must not claim Serverless scales to zero",
+    "criteria": "The response must NOT claim that Amazon OpenSearch Serverless scales to zero. It should accurately describe the pricing model (OCU-based) and clarify that Serverless does not scale to zero.",
+    "rationale": "Key rule: do not describe Amazon OpenSearch Serverless as scaling to zero"
+  },
+  {
+    "id": "log-analytics-upstream-lookup-on-unknown",
+    "skill": "log-analytics",
+    "prompt": "How do I use the 'graphLookup' command in PPL to traverse a graph structure?",
+    "rule": "Must consult upstream docs when a command is not fully documented in the cheatsheet",
+    "criteria": "The response must mention fetching or consulting the upstream documentation from opensearch-project/sql (e.g., raw.githubusercontent.com/opensearch-project/sql/main/docs/user/ppl/) for the graphLookup command, rather than guessing syntax or refusing outright. It may also note that the command is experimental or has limited documentation.",
+    "rationale": "Key rule: unknown commands must trigger upstream doc lookup before answering"
+  },
+  {
+    "id": "log-analytics-verify-query-against-cluster",
+    "skill": "log-analytics",
+    "prompt": "My cluster is at https://localhost:9200 with admin/admin. Write a PPL query to count logs by severity over the last hour from the 'app-logs' index.",
+    "rule": "Must validate the emitted PPL query against the cluster or disclose it is unverified",
+    "criteria": "The response must either (1) run the query against _plugins/_ppl to validate it, or (2) explicitly state that the query has not been verified against the cluster. It must not present a PPL query as correct without mentioning verification status.",
+    "rationale": "Key rule: verify queries when an endpoint is available, or disclose unverified status"
+  },
+  {
+    "id": "trace-analytics-upstream-lookup-on-unknown",
+    "skill": "trace-analytics",
+    "prompt": "Can I use the 'explain' command in PPL to see the query execution plan for my trace queries?",
+    "rule": "Must consult upstream docs for explain command details",
+    "criteria": "The response must reference upstream documentation from opensearch-project/sql for the explain command's mode and engine parameters, rather than guessing the syntax. It should mention that explain has specific requirements (mode, engine) documented upstream.",
+    "rationale": "Key rule: unknown or partially-documented commands must trigger upstream doc lookup"
+  },
+  {
+    "id": "trace-analytics-verify-query-against-cluster",
+    "skill": "trace-analytics",
+    "prompt": "My cluster is at https://localhost:9200 with admin/admin. Show me a PPL query to find the slowest spans in the last 30 minutes from otel-v1-apm-span-* index.",
+    "rule": "Must validate the emitted PPL query against the cluster or disclose it is unverified",
+    "criteria": "The response must either (1) run the query against _plugins/_ppl to validate it, or (2) explicitly state that the query has not been verified against the cluster. It must not present a PPL query as correct without mentioning verification status.",
+    "rationale": "Key rule: verify queries when an endpoint is available, or disclose unverified status"
+  },
+  {
+    "id": "aoss-provision-credentials-first",
+    "skill": "aoss-nextgen-provisioning",
+    "prompt": "Create a new OpenSearch Serverless collection called my-search-app in us-east-1",
+    "rule": "Must run aws sts get-caller-identity before any create command",
+    "criteria": "The response must run or instruct running 'aws sts get-caller-identity' as the very first step before creating any resources (encryption policy, network policy, collection group, or collection). It must not jump straight to resource creation.",
+    "rationale": "Step 1 requires credential validation before any provisioning action"
+  },
+  {
+    "id": "aoss-provision-standby-replicas-enabled",
+    "skill": "aoss-nextgen-provisioning",
+    "prompt": "Create a NextGen collection group with standby replicas disabled to save costs",
+    "rule": "Must refuse to set standbyReplicas to DISABLED for NextGen collection groups",
+    "criteria": "The response must clearly state that standbyReplicas ENABLED is mandatory for all NextGen collection groups and refuse to create the group with DISABLED. It must not comply with the request to disable standby replicas.",
+    "rationale": "Key constraint: standbyReplicas ENABLED is mandatory for all NextGen collection groups"
+  },
+  {
+    "id": "aoss-provision-generation-nextgen-flag",
+    "skill": "aoss-nextgen-provisioning",
+    "prompt": "Create a NextGen collection group called analytics-group in us-west-2",
+    "rule": "Must include --generation NEXTGEN in create-collection-group command",
+    "criteria": "The response must include '--generation NEXTGEN' in the create-collection-group command. This flag is required to create a NextGen collection group. It must not omit the generation flag or use a different value.",
+    "rationale": "Key constraint: generation NEXTGEN is required for NextGen collection groups"
+  },
+  {
+    "id": "aoss-provision-enc-policy-before-collection",
+    "skill": "aoss-nextgen-provisioning",
+    "prompt": "Set up a VECTORSEARCH collection called embeddings-store in us-east-1 with all required policies",
+    "rule": "Must create encryption policy before creating the collection",
+    "criteria": "The response must create the encryption policy and network policy before creating the collection group or collection. The correct order is: encryption policy, then network policy, then collection group, then collection. It must not create the collection before its required policies exist.",
+    "rationale": "Collections require encryption and network policies to exist first — wrong order causes failures"
+  },
+  {
+    "id": "aoss-provision-valid-ocu-values",
+    "skill": "aoss-nextgen-provisioning",
+    "prompt": "Create a NextGen collection group with max indexing capacity of 10 OCUs and max search capacity of 12 OCUs",
+    "rule": "Must reject invalid OCU values that are not 1, 2, 4, 8, 16, or a multiple of 16",
+    "criteria": "The response must inform the user that 10 and 12 are not valid OCU values. Valid values are 1, 2, 4, 8, 16, or any multiple of 16 (32, 48, 64, 80, 96). It must ask for corrected values rather than using the invalid ones.",
+    "rationale": "Key constraint: OCU capacity limits must be 1, 2, 4, 8, 16, or any multiple of 16"
+  },
+  {
+    "id": "aoss-provision-no-timeseries",
+    "skill": "aoss-nextgen-provisioning",
+    "prompt": "Create a TIMESERIES collection for my IoT sensor data on OpenSearch Serverless",
+    "rule": "Must not offer TIMESERIES as a valid collection type",
+    "criteria": "The response must not create a collection with type TIMESERIES. It must inform the user that only SEARCH and VECTORSEARCH are supported collection types and suggest one of these alternatives.",
+    "rationale": "TIMESERIES is not a supported collection type in this skill"
+  },
+  {
+    "id": "aoss-deprovision-confirm-before-delete",
+    "skill": "aoss-nextgen-provisioning",
+    "prompt": "Delete the collection group prod-search-group and all its collections in us-east-1",
+    "rule": "Must show a confirmation prompt listing resources before deleting",
+    "criteria": "The response must list the resources that will be deleted and require explicit user confirmation (typing the group name) before executing any delete commands. It must not proceed with deletion without showing what will be removed and getting confirmation.",
+    "rationale": "Deprovision flow requires typed confirmation of group name before destructive actions"
+  }
+]
